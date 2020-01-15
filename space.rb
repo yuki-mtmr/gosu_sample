@@ -2,6 +2,7 @@ require 'gosu'
 
 module ZOrder
   BACKGROUND, STARS, PLAYER, UI = *0..3
+  BACKGROUND, WEEDS, PLAYER, UI = *0..3
 end
 
 class Tutorial < Gosu::Window
@@ -14,8 +15,10 @@ class Tutorial < Gosu::Window
     @player = Player.new
     @player.warp(320, 240)
 
-    @star_anim = Gosu::Image.load_tiles("images/star.png", 25, 25)
+    @star_anim = Gosu::Image.load_tiles("images/star.png", 25, 25) #スターイメージ
+    @weed = Gosu::Image.load_tiles("images/weed.png", 25, 25)
     @stars = Array.new
+    @weeds = Array.new
 
     @font = Gosu::Font.new(20)
 
@@ -35,9 +38,14 @@ class Tutorial < Gosu::Window
     end
     @player.move
     @player.collect_stars(@stars)
+    @player.collect_weeds(@weeds)
 
     if rand(100) < 4 and @stars.size < 25
       @stars.push(Star.new(@star_anim))
+    end
+
+    if rand(1000) < 1 and @weeds.size < 25
+      @weeds.push(Weed.new(@weed))
     end
   end
 
@@ -45,7 +53,8 @@ class Tutorial < Gosu::Window
     @player.draw
     @background_image.draw(0, 0, ZOrder::BACKGROUND)
     @stars.each { |star| star.draw }
-    @font.draw("Score: #{@player.score}", 10, 10, ZOrder::UI, 1.0, 1.0, Gosu::Color::YELLOW)
+    @weeds.each { |weed| weed.draw }
+    @font.draw("Score: #{@player.score}", 10, 10, ZOrder::UI, 1.0, 1.0, Gosu::Color::WHITE)
   end
 
   def button_down(id)
@@ -116,6 +125,18 @@ class Player
       end
     end
   end
+
+  def collect_weeds(weeds)
+    weeds.reject! do |weed|
+      if Gosu.distance(@x, @y, weed.x, weed.y) < 35
+        @score += 80000
+        @beep.play
+        true
+      else
+        false
+      end
+    end
+  end
 end
 
 # スターアニメーション
@@ -134,9 +155,28 @@ class Star
   end
 
   def draw  
-    img = @animation[Gosu.milliseconds / 100 % @animation.size]
+    img = @animation[Gosu.milliseconds / 100 % @animation.size] #回転速度
     img.draw(@x - img.width / 2.0, @y - img.height / 2.0,
         ZOrder::STARS, 1, 1, @color, :add)
+  end
+
+end
+
+# weed
+
+class Weed
+  attr_reader :x, :y
+
+  def initialize(animation)
+    @animation = animation
+    @x = rand * 640
+    @y = rand * 480
+  end
+
+  def draw  
+    img = @animation[Gosu.milliseconds / 100 % @animation.size] #回転速度
+    img.draw(@x - img.width / 2.0, @y - img.height / 2.0,
+        ZOrder::WEEDS, 1, 1)
   end
 
 end
