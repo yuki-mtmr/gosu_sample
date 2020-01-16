@@ -9,23 +9,22 @@ module ZOrder
 end
 
 class Tutorial < Gosu::Window
+
   def initialize
     super 640, 480
     self.caption = "My Awesome Space Game"
 
     @background_image = Gosu::Image.new("images/space.png", :tileable => true)
-
     @player = Player.new
     @player.warp(320, 240)
-
     @star_anim = Gosu::Image.load_tiles("images/star.png", 25, 25) #スターイメージ
     @weed = Gosu::Image.load_tiles("images/weed.png", 25, 25)
     @stars = Array.new
     @weeds = Array.new
     @visible = 0
     @playing = true
-
     @font = Gosu::Font.new(20)
+    @start_time = 0
 
   end
 
@@ -55,7 +54,7 @@ class Tutorial < Gosu::Window
       end
       @visible -= 1
       @visible = 50 if @visible < -10 && rand < 0.01
-      @time_left = (60 - (Gosu.milliseconds / 1000))
+      @time_left = (60 - ((Gosu.milliseconds - @start_time) / 1000))
       @playing = false if @time_left < 1
     end
   end
@@ -74,14 +73,21 @@ class Tutorial < Gosu::Window
       @font.draw("Game Over!!!", 260, 200, 3)
       @visible = 20
       @time_left = 0
+      @font.draw("スペースキーでゲーム再開", 210, 250, 3)
     end
   end
 
   def button_down(id)
-    if id == Gosu::KbEscape
-      close
+    if @playing
     else
-      super
+      if (id == Gosu::KbEscape)
+        close
+      elsif (id == Gosu::KbSpace)
+        @playing = true
+        @visible = -10
+        @start_time = Gosu.milliseconds
+        @player.score = 0
+      end
     end
   end
   

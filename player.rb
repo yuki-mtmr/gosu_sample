@@ -1,5 +1,5 @@
 class Player
-  attr_reader :score
+  attr_accessor :score
 
   def initialize
     @image = Gosu::Image.new("images/starfighter.bmp")
@@ -38,10 +38,6 @@ class Player
 
   def draw
      @image.draw_rot(@x, @y, 1, @angle)
-  end
-
-  def score
-    @score
   end
 
   def collect_stars(stars)

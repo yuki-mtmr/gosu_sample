@@ -17,6 +17,7 @@ class WhackaMole < Gosu::Window
     @font = Gosu::Font.new(30)
     @score = 0
     @playing = true
+    @start_time = 0
   end
 
   def draw
@@ -39,6 +40,7 @@ class WhackaMole < Gosu::Window
       @font.draw("Game Over!!!", 300, 300, 3)
       @visible = 20
       @time_left = 0
+      @font.draw("スペースキーでゲーム再開", 220, 350, 3)
     end
   end
 
@@ -50,7 +52,7 @@ class WhackaMole < Gosu::Window
       @velosity_y *= -1 if @y + @height / 2 > 600 || @y - @height / 2 < 0
       @visible -= 1
       @visible = 50 if @visible < -10 && rand < 0.01
-      @time_left = (60 - (Gosu.milliseconds / 1000))
+      @time_left = (10 - ((Gosu.milliseconds - @start_time) / 1000))
       @playing = false if @time_left < 1
     end
   end
@@ -65,6 +67,13 @@ class WhackaMole < Gosu::Window
           @hit = -1
           @score -= 3
         end
+      end
+    else
+      if (id == Gosu::KbSpace)
+        @playing = true
+        @visible = -10
+        @start_time = Gosu.milliseconds
+        @score = 0
       end
     end
   end
