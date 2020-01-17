@@ -9,8 +9,7 @@ class Weed
 
   def draw  
     img = @animation[Gosu.milliseconds / 100 % @animation.size] #回転速度
-    img.draw(@x - img.width / 2.0, @y - img.height / 2.0,
-        ZOrder::WEEDS, 1, 1)
+    img.draw(@x - img.width / 2.0, @y - img.height / 2.0,1)
   end
 
 end

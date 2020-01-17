@@ -5,7 +5,6 @@ require_relative 'weed'
 
 module ZOrder
   BACKGROUND, STARS, PLAYER, UI = *0..3
-  BACKGROUND, WEEDS, PLAYER, UI = *0..3
 end
 
 class Tutorial < Gosu::Window
